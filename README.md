@@ -105,7 +105,7 @@ Key Points
 
 This will take a night to run.
 
-## Powershell
+### Powershell
 
 Onetime install of QGIS processing
 ```
