@@ -53,7 +53,7 @@ Replace any missing values in the LIDAR data with OS Open 50 Terrrain Data. This
 ***GB_10km_building_heights.R***
 For each 10km raster creates a difference raster (DSM - DTM) and uses that to calculate building heights and volumes for the OS Open Vector Stack Buildings. 
 
-Planned improvement is to replace OS buildings with OSM where available and split up the OS buildings with the INSPIRE polygons. OSM buildings tend to be more detailed, and OS groups terraced buildings into a single long building.
+An improvement is to replace OS buildings with OSM where available and split up the OS buildings with the INSPIRE polygons. OSM buildings tend to be more detailed, and OS groups terraced buildings into a single long building.
 
 ***GB_10km_mosaic.R***
 Mosaic the 10km rasters into a single large raster of whole GB (about 95 GB compressed TIF)
@@ -159,8 +159,34 @@ Data Downloads are provided at [www.carbon.place](https://www.carbon.place/data)
 
 Currently due to the size of these datasets only the `.pmtiles` format is provided with `webp` encoding.
 
+**PMTiles**, an open archive format for pyramids of tile data, accessible via HTTP Range Requests. The file contains [WebP](https://en.wikipedia.org/wiki/WebP) images with [Terrarium](https://github.com/tilezen/joerd/blob/master/docs/formats.md) encoding. This format is designed for web mapping but is also highly compressed (around 8:1 compression ratio) which is deserable for a map of the whole of Great Britian at 2m resolution. 
+
 Please get in contact if you need the original 87GB GeoTiffs.
 
+`pmtiles` files can be used as base maps for MapLibre by modifying the `style.json` file. For example:
 
+```
+"sources": {
+    "composite": {
+      "url": "PATH_TO_MAP_SOURCE",
+      "type": "vector"
+    },
+     "terrainSource": {
+      "type": "raster-dem",
+      "url": "pmtiles://https://www.somesite.com/DTM.pmtiles",
+      "tileSize": 512,
+      "minzoom": 0,
+    	"maxzoom": 13
+    },
+    "hillshadeSource": {
+      "type": "raster-dem",
+      "url": "pmtiles://https://www.somesite.com/DTM.pmtiles",
+      "tileSize": 512,
+      "minzoom": 0,
+    	"maxzoom": 11
+    }
+  },
 
+```
 
+See the [MapLibre documentation](https://maplibre.org/maplibre-gl-js/docs/examples/3d-terrain/) for more details on the use of 3D terrain, and the [pmtiles documentation](https://docs.protomaps.com/pmtiles/maplibre) on the use of `pmtiles` with MapLibre.
