@@ -1,11 +1,11 @@
 # GBDEM
 A free Open Data two metre resolution Digital Terrain Model (DTM) and Digital Surface Model (DSM) of Great Britain.
 
-A [Digital Elevation Model](https://en.wikipedia.org/wiki/Digital_elevation_model) (DEM) is typically a raster datasets where each pixel in the image contains information on the elevation above sea level. The typically come in two versions Terrain (DTM) which gives the elevation of the ground and Surface (DSM) that includes things above the ground such as buildings and trees.
+A [Digital Elevation Model](https://en.wikipedia.org/wiki/Digital_elevation_model) (DEM) is typically a raster dataset where each pixel in the image contains information on the elevation above sea level. They usually come in two versions: Terrain (DTM), which gives the elevation of the ground, and Surface (DSM), which includes things above the ground, such as buildings and trees.
 
-In the Great Britain the easiest way to get at Digital Terrain Model is to use the [OS Terrain 50](https://www.ordnancesurvey.co.uk/products/os-terrain-50) which is free Open Data. However it only has a 50m resolution and the higher resolution [OS Terrain 5](https://www.ordnancesurvey.co.uk/products/os-terrain-5) is only available at commercial rates.
+In Great Britain, the easiest way to get a Digital Terrain Model is to use the [OS Terrain 50](https://www.ordnancesurvey.co.uk/products/os-terrain-50), which is free Open Data. However, it only has a 50m resolution, and the higher resolution [OS Terrain 5](https://www.ordnancesurvey.co.uk/products/os-terrain-5) is only available at commercial rates.
 
-This repo is an attempt to produce a single high resolution (2 metre) DTM and DSM for Great Britain. It uses Open LIDAR data published by the Uk Government under the Open Government Licence and has a high but not complete coverage of Great Britain.
+This repository is an attempt to produce a single high-resolution (2m) DTM and DSM for Great Britain. It utilises Open LIDAR data published by the UK government under the Open Government Licence, offering high but not comprehensive coverage of Great Britain.
 
 <img src='images/dtm50vs2m.png'/>
 
@@ -15,11 +15,11 @@ Example of hill shading based on the OS Terrain 50 (left) and the GBDEM 2 metre 
 
 Example of draping aerial photography over at DEM OS Terrain 50 DTM (left) and the GBDEM 2 metre DTM plus extracted building heights (right). 
 
-High resolution DEMs have several applications, but the main focus of this work is extracting 3D building footprints.
+High-resolution DEMs have several applications, but the main focus of this work is extracting 3D building footprints.
 
 <img src='images/dsm.jpg'/>
 
-Example of aerial photography draped over the the Digital Surface Map. 
+Example of aerial photography draped over the Digital Surface Map. 
 
 ## Source Data
 
@@ -30,13 +30,13 @@ Example of aerial photography draped over the the Digital Surface Map.
 
 <img src='images/coverage.png'/>
 
-Approximate coverage of the high resolution data. Note this map is based on British National Grid squares, and so only shows that some data is available within the grid square, not that the square is fully mapped.
+Approximate coverage of the high-resolution data. Note this map is based on British National Grid squares, and so only shows that some data is available within the grid square, not that the square is fully mapped.
 
-Data is taken for most recent available year, but in some places this can be several years old. 
+Data is taken for the most recent available year, but in some places, this can be several years old. 
 
 ## Method
 
-I tried Several methods with scripts in the repo but this is the final working method. Ignore other scripts.
+I tried Several methods with scripts in the repo, but this is the final working method. Ignore other scripts.
 
 ### In R
 
@@ -44,16 +44,16 @@ I tried Several methods with scripts in the repo but this is the final working m
 Unzip/open and downscale to 2m resolution as required
 
 ***GB_10km_tiles.R***
-Take small tiles from and make into larger tiles that match the OS National Grid 10km tiles (e.g. NS80). This resolves boarder issues between datasets and some minor misalignments.
+Take small tiles and make them into larger tiles that match the OS National Grid 10km tiles (e.g. NS80). This resolves border issues between datasets and some minor misalignments.
 
 
 ***GB_10km_fill_in_gaps.R***
-Replace any missing values in the LIDAR data with OS Open 50 Terrrain Data. This is low resolution but give the output national coverage.
+Replace any missing values in the LIDAR data with OS Open 50 Terrain Data. This is low-resolution, but it gives the output national coverage.
 
 ***GB_10km_building_heights.R***
-For each 10km raster creates a difference raster (DSM - DTM) and uses that to calculate building heights and volumes for the OS Open Vector Stack Buildings. 
+Each 10km raster creates a difference raster (DSM - DTM) and uses that to calculate building heights and volumes for the OS Open Vector Stack Buildings. 
 
-An improvement is to replace OS buildings with OSM where available and split up the OS buildings with the INSPIRE polygons. OSM buildings tend to be more detailed, and OS groups terraced buildings into a single long building.
+An improvement would be to replace OS buildings with OSM where available and split the OS buildings into INSPIRE polygons. OSM buildings tend to be more detailed, and OS groups terraced buildings into a single long building.
 
 ***GB_10km_mosaic.R***
 Mosaic the 10km rasters into a single large raster of whole GB (about 95 GB compressed TIF)
@@ -98,12 +98,12 @@ Convert from single band to RGB encoded with `rio-rgbify`.
 Key Points
 
 1. rio rgbify can go straight to mbtiles but I got loads of errors so go to anther raster first
-1. `-b -10000 -i 0.1` use mapbox encoding nothing else seems to worth with MapLibre
-1. `--workers 10` this is ram limited so can use some but not all mulitcore
+1. `-b -10000 -i 0.1` use mapbox encoding. Nothing else seems to worth with MapLibre
+1. `--workers 10` This is ram limited, so you can use some but not all mulitcore
 1. `--co BIGTIFF=YES` still need to use big tif
 1. `--co TILED=YES` massive performance impact on the tileing stage (later)
 
-This will take a night to run
+This will take a night to run.
 
 ## Powershell
 
@@ -122,9 +122,9 @@ Generate XYZ Tiles (directory)
 
 QGIS doesn't have the option to create webp tiles, so create PNG tiles. This could be a bug as the WEBP driver has been added to GDAL since version 3.6
 
-The mbtiles version can't create high res (512x512) images so create individual pictures first
+The mbtiles version can't create high-resolution (512x512) images, so create individual pictures first.
 
-Use a custom background colour to avoid obvious edge to the tiles.
+Use a custom background colour to avoid obvious edges to the tiles.
 
 
 ### Back in Windows Subsystem for Linux
@@ -157,9 +157,9 @@ For Zoom 0 to 10 is to 130 MB
 
 Data Downloads are provided at [www.carbon.place](https://www.carbon.place/data).
 
-Currently due to the size of these datasets only the `.pmtiles` format is provided with `webp` encoding.
+Currently, due to the size of these datasets, only the `.pmtiles` format is provided with `webp` format.
 
-**PMTiles**, an open archive format for pyramids of tile data, accessible via HTTP Range Requests. The file contains [WebP](https://en.wikipedia.org/wiki/WebP) images with [Terrarium](https://github.com/tilezen/joerd/blob/master/docs/formats.md) encoding. This format is designed for web mapping but is also highly compressed (around 8:1 compression ratio) which is deserable for a map of the whole of Great Britian at 2m resolution. 
+**PMTiles**, an open archive format for pyramids of tile data, accessible via HTTP Range Requests. The file contains [WebP](https://en.wikipedia.org/wiki/WebP) images with [Terrarium](https://github.com/tilezen/joerd/blob/master/docs/formats.md) encoding. This format is designed for web mapping but is also highly compressed (around 8:1 compression ratio), which is desirable for a map of the whole of Great Britain at 2m resolution. 
 
 Please get in contact if you need the original 87GB GeoTiffs.
 
