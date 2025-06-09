@@ -1,16 +1,42 @@
 # GBDEM
-A 2m resolution Digital Terrain Model (DEM) and Digital Surface Model (DSM) of Great Britain.
+A free Open Data two metre resolution Digital Terrain Model (DTM) and Digital Surface Model (DSM) of Great Britain.
+
+A [Digital Elevation Model](https://en.wikipedia.org/wiki/Digital_elevation_model) (DEM) is typically a raster datasets where each pixel in the image contains information on the elevation above sea level. The typically come in two versions Terrain (DTM) which gives the elevation of the ground and Surface (DSM) that includes things above the ground such as buildings and trees.
+
+In the Great Britain the easiest way to get at Digital Terrain Model is to use the [OS Terrain 50](https://www.ordnancesurvey.co.uk/products/os-terrain-50) which is free Open Data. However it only has a 50m resolution and the higher resolution [OS Terrain 5](https://www.ordnancesurvey.co.uk/products/os-terrain-5) is only available at commercial rates.
+
+This repo is an attempt to produce a single high resolution (2 metre) DTM and DSM for Great Britain. It uses Open LIDAR data published by the Uk Government under the Open Government Licence and has a high but not complete coverage of Great Britain.
+
+<img src='images/dtm50vs2m.png'/>
+
+Example of hill shading based on the OS Terrain 50 (left) and the GBDEM 2 metre (right). 
+
+<img src='images/dovercliffs.png'/>
+
+Example of draping aerial photography over at DEM OS Terrain 50 DTM (left) and the GBDEM 2 metre DTM plus extracted building heights (right). 
+
+High resolution DEMs have several applications, but the main focus of this work is extracting 3D building footprints.
+
+<img src='images/dsm.jpg'/>
+
+Example of aerial photography draped over the the Digital Surface Map. 
 
 ## Source Data
 
-1. England - Environment Agency LIDAR (>90% coverage)
-1. Wales - Welsh Government LIDAR (~70% coverage)
-1. Scotland - Scottish Government LIDAR (~40% Coverage)
+1. England - [Environment Agency LIDAR](https://www.data.gov.uk/dataset/f0db0249-f17b-4036-9e65-309148c97ce4/national-lidar-programme) (>90% coverage)
+1. Wales - [Welsh Government LIDAR](https://datamap.gov.wales/maps/lidar-viewer/) (~70% coverage)
+1. Scotland - [Scottish Government LIDAR](https://remotesensingdata.gov.scot/data#/list) (~40% Coverage)
 1. OS Open50 - 50m DTM used to fill in gaps (100% coverages)
+
+<img src='images/coverage.png'/>
+
+Approximate coverage of the high resolution data. Note this map is based on British National Grid squares, and so only shows that some data is available within the grid square, not that the square is fully mapped.
+
+Data is taken for most recent available year, but in some places this can be several years old. 
 
 ## Method
 
-I tried Several methods with scripts in the repo but this is the final working method. Igore other scripts.
+I tried Several methods with scripts in the repo but this is the final working method. Ignore other scripts.
 
 ### In R
 
@@ -63,7 +89,7 @@ https://github.com/syncpoint/terrain-rgb/blob/master/README.md
 
 
 
-### In WSL
+### In Windows Subsystem for Linux
 
 Convert from single band to RGB encoded with `rio-rgbify`.
 
@@ -101,7 +127,7 @@ The mbtiles version can't create high res (512x512) images so create individual 
 Use a custom background colour to avoid obvious edge to the tiles.
 
 
-### WSL
+### Back in Windows Subsystem for Linux
 
 Convert to webp using imagemagic
 
@@ -127,6 +153,13 @@ Convert to pmtiles
 For Zoom 0 to 10 is to 130 MB
 
 
+## Outputs
+
+Data Downloads are provided at [www.carbon.place](https://www.carbon.place/data).
+
+Currently due to the size of these datasets only the `.pmtiles` format is provided with `webp` encoding.
+
+Please get in contact if you need the original 87GB GeoTiffs.
 
 
 
