@@ -1,4 +1,4 @@
-# GBDEM
+# Great Britain DEM
 A free Open Data two metre resolution Digital Terrain Model (DTM) and Digital Surface Model (DSM) of Great Britain.
 
 A [Digital Elevation Model](https://en.wikipedia.org/wiki/Digital_elevation_model) (DEM) is typically a raster dataset where each pixel in the image contains information on the elevation above sea level. They usually come in two versions: Terrain (DTM), which gives the elevation of the ground, and Surface (DSM), which includes things above the ground, such as buildings and trees.
