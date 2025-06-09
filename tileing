@@ -1,0 +1,89 @@
+# Build pmtiles
+
+# Terrain
+# Formula is height = base + ((R * 256 * 256 + G * 256 + B) * interval)
+# UK can do b = -1000  and i = 0.02
+# Input must be EPSG 4326, have no 'No Data' pixels, and have a small 'No Data' value e.g. -1000 not -3.4e+38
+# Ignore FutureWarning: Mercantile 2.0
+
+# Ran for several day so ret, add verbose and swtich to SSD as disk read seemed to be limiting factor
+cd '/mnt/f/Big Data/'
+rio rgbify -b -1000 -i 0.02 --format webp --max-z 16 --min-z 6 --verbose DSM_England_2M_round_4326.tif DSM_England_2m.mbtiles
+
+cd /mnt/c/tiles
+./pmtiles convert DSM_England_2m.mbtiles DSM_England_2m.pmtiles
+
+
+# GB DEM lower zoom and with rounding
+# Custom enconding not working with maplibre
+cd '/mnt/f/DTM_DSM/large_rasters/GB'
+rio rgbify -b -1000 -i 0.02 --format webp --max-z 14 --min-z 6 --round-digits 2 --co SPATIAL_INDEX=YES --workers 15 --verbose GB_DTM_4326.tif GB_DTM.mbtiles
+
+
+
+
+
+# Attempt 2 more workes no custom encoding and include spatial index
+# Must do on C a s read limited
+# Mak 18 works dut to ram limit
+cd '/mnt/c/tiles/'
+rio rgbify --format webp --max-z 14 --min-z 6 --round-digits 2 --co SPATIAL_INDEX=YES --workers 18 --verbose GB_DTM_4326.tif GB_DTM_v2.mbtiles
+
+sqlite3 GB_DTM_v2.mbtiles
+CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);
+.exit
+
+
+./pmtiles convert GB_DTM_v2.mbtiles GB_DTM_v2.pmtiles
+
+
+
+
+# QGIS Process
+# Aim: Replace Nodata with 0 and set no data value to -10000
+# Raster Calcualtor
+("GB_DTM_4326@1" != -1000) * "GB_DTM_4326@1"
+
+
+
+rio rgbify --format webp -b -10000 -i 0.1 --max-z 14 --min-z 6  --workers 18  GB_DTM_4326_sample_convert_rastercalc.tif GB_DTM_test.mbtiles
+sqlite3 GB_DTM_test.mbtiles
+CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);
+.exit
+./pmtiles convert GB_DTM_test.mbtiles GB_DTM_test.pmtiles
+
+
+sqlite3 GB_DTM_test3.mbtiles
+CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);
+.exit
+./pmtiles convert GB_DTM_test3.mbtiles GB_DTM_test3.pmtiles
+
+
+rio rgbify --format png -b -10000 -i 0.1 --max-z 14 --min-z 6  --workers 18  GB_DTM_4326_v2.tif GB_DTM_v2.mbtiles
+sqlite3 GB_DTM_v2.mbtiles
+CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);
+.exit
+./pmtiles convert GB_DTM_v2.mbtiles GB_DTM_v2.pmtiles
+
+
+
+# Restart
+# Adpated from https://learn.microsoft.com/en-us/azure/azure-maps/elevation-data-services
+# Use QGIS and GDAL Warp to reporject to epsg:3857. Use nodata 0, mulithreaded warping, and -wo NUM_THREADS=30 wrie to SSD for speed
+
+gdalwarp -s_srs EPSG:27700 -t_srs EPSG:3857 -dstnodata 0.0 -r near -multi -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=3 -co ZLEVEL=9 -co BIGTIFF=YES -co NUM_THREADS=30 F:\DTM_DSM\large_rasters\GB\GB_DTM_27700.tif C:/tiles/GB_DTM_3857.tif
+
+# Then use rio-rgbify to make RGB large raster
+# Perhaps this is faster?
+
+cd /mnt/c/tiles
+# This crashes with the densify_pts must be at least 2 if the output is geographic error
+rio rgbify --format webp -b -10000 -i 0.1 --max-z 14 --min-z 6  --workers 18  GB_DTM_3857.tif GB_DTM_v3.mbtiles
+
+# Perhaps this is faster?
+# Tyry the bigtiff as https://gis.stackexchange.com/questions/368251/error-occurred-while-writing-dirty-block-from-gdalrasterbandirasterio
+rio rgbify -b -10000 -i 0.1 --workers 10 --co BIGTIFF=YES GB_DTM_3857.tif GB_DTM_RGB.tif
+# QGIS can make the tiles bu not as webp
+
+
+
